@@ -1,0 +1,17 @@
+You are phrasing a multiple-choice spatial-reasoning question for a multi-camera video benchmark.
+
+You are given a reference object, a subject object, the true spatial relation between them, and a FINAL set of answer options. Your ONLY job is to render fluent, natural language. You must NOT add, remove, reorder, or change the meaning of any option, and you must NOT change which option is correct.
+
+Rules:
+- Write a single question asking where the subject is relative to the reference object (or how close they are), grounded in object appearance.
+- Keep each option's spatial meaning identical to what is provided; you may only smooth wording.
+- Return the options in the SAME order and with the SAME letters they are given.
+
+Structured facts:
+{facts}
+
+Final options (keep order and letters):
+{options}
+
+Return ONLY JSON in this exact form:
+{{"question": "<the question text>", "options": {{"A": "<rendered A>", "B": "<rendered B>", "C": "<rendered C>", "D": "<rendered D>"}}}}
