@@ -109,7 +109,7 @@
           <div class="column has-text-centered">
             <div class="publication-links">
               <span class="link-block">
-                <a href="https://google.com"
+                <a href="https://arxiv.org/pdf/2608.15539"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -121,9 +121,9 @@
                 <a href="https://huggingface.co/datasets/SWARM-Lab/CrossView"
                    class="external-link button is-normal is-rounded is-dark">
                   <span class="icon">
-                      <i class="fas fa-database"></i>
+                      <img src="static/images/huggingface.svg" style="height: 1em; vertical-align: middle;">
                   </span>
-                  <span>Dataset</span>
+                  <span>Hugging Face</span>
                 </a>
               </span>
               <span class="link-block">
@@ -137,24 +137,138 @@
               </span>
             </div>
           </div>
+          <br></br>
+          <figure style="text-align: center;">
+            <img src="static/images/poster.jpg" alt="ECCV Poster" class="zoomable-image">
+            <figcaption style="color: #666; font-style: italic; font-size: 0.9em; margin-top: 8px;">
+              Our ECCV Poster
+            </figcaption>
+          </figure>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Video understanding benchmarks have long centered on single-camera settings, where modern multi-modal language models achieve strong performance across image and video tasks. Yet, the real world runs on multi-camera networks: autonomous vehicles, security systems, and robots all gather data across many simultaneous views. We argue that this is not simply "more" of the single-camera problem; it is fundamentally different. Multi-camera reasoning requires handling context that scales with the number of views, resolving occlusions visible from only a subset of cameras, judging which views matter, and integrating evidence across perspectives that may overlap or diverge. Current models struggle with exactly these challenges, yet no benchmark systematically targets them. We introduce CrossView, a multi-camera video question-answering benchmark spanning autonomous driving, security surveillance, egocentric/exocentric video, and robotics. Evaluation of proprietary models, such as GPT-5.2, and open-source models, like Qwen3-VL, reveals consistently low accuracy, with open-source models trailing by a wide margin. Performance scales strongly with a model's ability to jointly process multiple viewpoints, positioning CrossView as a rigorous benchmark for multi-camera video.
-          </p>
+    <span style="display: block; height: 36px;"></span>
+    <div class="container is-max-desktop">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <h2 class="title is-3">Abstract</h2>
+          <div class="content has-text-justified">
+            <p>
+              Video understanding benchmarks have long centered on single-camera settings, where modern multi-modal language models achieve strong performance across image and video tasks. Yet, the real world runs on multi-camera networks: autonomous vehicles, security systems, and robots all gather data across many simultaneous views. We argue that this is not simply "more" of the single-camera problem; it is fundamentally different. Multi-camera reasoning requires handling context that scales with the number of views, resolving occlusions visible from only a subset of cameras, judging which views matter, and integrating evidence across perspectives that may overlap or diverge. Current models struggle with exactly these challenges, yet no benchmark systematically targets them. We introduce CrossView, a multi-camera video question-answering benchmark spanning autonomous driving, security surveillance, egocentric/exocentric video, and robotics. Evaluation of proprietary models, such as GPT-5.2, and open-source models, like Qwen3-VL, reveals consistently low accuracy, with open-source models trailing by a wide margin. Performance scales strongly with a model's ability to jointly process multiple viewpoints, positioning CrossView as a rigorous benchmark for multi-camera video.
+            </p>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<div class="container is-max-desktop">
+  <div class="rows is-centered">
+    <div class="row">
+      <h2 class="title is-3 has-text-centered">Methodology</h2>
+    </div>
+    <br>
+    <div class="row">
+      <p>
+        CrossView is built by a two-stage pipeline that turns raw multi-camera recordings into questions whose answers are correct by construction. We first consolidate each scene into a Spatio-Temporal Scene Graph (STSG), then query that graph programmatically to synthesize questions, using GPT-5.2 only to phrase them in natural language.
+      </p>
+    </div>
+    <br>
+    <p>
+      <ul class="dashed-list">
+        <li> <b>Step 1: </b>We consolidate object trajectories and spatial coordinates across nuScenes, Ego-Exo4D, AgiBot, and MEVA, refining 3D localization with LiDAR point clouds on nuScenes and using the provided 3D or bounding-box annotations elsewhere.
+        </li>
+        <li> <b>Step 2: </b>We attach semantics to each object, using InternVL-3.5 38B to annotate activities for datasets without native labels and GPT-5.2 to produce a scene-level caption per timestamp.
+        </li>
+        <li> <b>Step 3: </b>We compute pairwise spatial predicates between entities across camera views, such as <i>behind</i>, <i>near</i>, <i>left</i>, and <i>right</i>, along with orientation deltas and relative distances, and group consecutive timestamps sharing an activity into event intervals.
+        </li>
+        <li> <b>Step 4: </b>Each timestamp yields a graph snapshot whose nodes carry activity labels, descriptions, and event intervals, and whose edges encode spatial relations; appending snapshots chronologically gives the final STSG.
+        </li>
+        <li> <b>Step 5: </b>A Grounding-Target engine queries the STSG to select an anchor, a target, and three kinds of distractors (spatial, temporal, and existential), which GPT-5.2 phrases into a fluent question. Because the answer is read off the graph rather than generated by a model, it is correct by construction.
+        </li>
+      </ul>
+    </p>
+    <br>
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <img src="static/images/pipeline.png" alt="CrossView construction pipeline" class="zoomable-image">
+      </div>
+    </div>
+  </div>
+  <br>
+</div>
+<br><br>
+
+<div class="container is-max-desktop">
+  <div class="row">
+    <h2 class="title is-3 has-text-centered">Key Capabilities</h2>
+  </div>
+  <br>
+  <div class="columns is-centered">
+    <div class="column">
+      <div class="content">
+        <h3 class="title is-4 has-text-centered">Six Reasoning Categories</h3>
+        <p>
+        CrossView groups six task types into three families: temporal reasoning, spatial reasoning, and holistic understanding. Every question requires integrating evidence across multiple synchronized camera views.
+</p>
+      </div>
+    </div>
+    <div class="column">
+      <div class="columns is-centered">
+        <div class="column content">
+          <h3 class="title is-4 has-text-centered">Four Domains, 6,000 Questions</h3>
+          <p>
+          Questions are split evenly across the six categories at 1,000 each, and drawn from four source domains. MEVA and nuScenes contribute the majority, with 2,250 and 1,750, while Ego-Exo4D and AgiBot supply 1,250 and 750.
+</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="columns is-centered is-vcentered">
+    <div class="column">
+      <div class="columns is-centered">
+        <div class="column content">
+          <img src="static/images/questions.png" alt="Question categories in CrossView" class="zoomable-image">
+        </div>
+      </div>
+    </div>
+    <div class="column">
+      <div class="columns is-centered">
+        <div class="column content">
+          <img src="static/images/pies.png" alt="Dataset question distribution" class="zoomable-image">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="title is-4 has-text-centered">Frontier Models Fall Short Across the Board</h3>
+  <p>
+  Uniform-sampling accuracy (%) across all four domains. No family is consistently strong: GPT-5.2 lands near chance on Ego-Exo4D camera identification, and the tasks that demand synthesizing evidence <i>across</i> cameras, counting and best-camera selection, are the hardest everywhere. The gap widens with camera density, from the controlled AgiBot setup to the wide-area MEVA deployment.
+  </p>
+  <br>
+  <div class="columns is-centered">
+    <div class="column is-four-fifths">
+      <img src="static/images/results_table.png" class="zoomable-image">
+    </div>
+  </div>
+</div>
+<br>
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@inproceedings{shah2026crossview,
+  author    = {Shah, Sahil and Sharan, SP and Goel, Harsh and Pasula, Manvik and Hebbalae, Adithya and Choi, Minkyu and Chinchali, Sandeep},
+  title     = {CrossView: Can Vision-Language Models Reason Across Cameras?},
+  journal   = {Proceedings of the European Conference on Computer Vision (ECCV)},
+  month     = {September},
+  year      = {2026},
+}</code></pre>
+  </div>
+</section>
+
 
 <footer class="footer">
   <div class="container">
@@ -169,6 +283,37 @@
     </div>
   </div>
 </footer>
+
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const images = document.querySelectorAll(".zoomable-image");
+    const zoomOverlay = document.createElement("div");
+    zoomOverlay.classList.add("zoom-overlay");
+    const zoomImage = document.createElement("img");
+    zoomOverlay.appendChild(zoomImage);
+    document.body.appendChild(zoomOverlay);
+    images.forEach((img) => {
+      const highResSrc = img.getAttribute("data-highres");
+      if (highResSrc) {
+        const preloadImg = new Image();
+        preloadImg.src = highResSrc;
+      }
+
+      img.addEventListener("click", () => {
+        zoomImage.src = highResSrc || img.src;
+        zoomOverlay.classList.add("active");
+      });
+    });
+    zoomOverlay.addEventListener("click", () => {
+      zoomOverlay.classList.remove("active");
+      zoomImage.src = "";
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") zoomOverlay.classList.remove("active");
+    });
+  });
+</script>
 
 </body>
 </html>
